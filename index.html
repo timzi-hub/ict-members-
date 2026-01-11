@@ -64,14 +64,16 @@
 {
   "imports": {
     "@google/genai": "https://esm.sh/@google/genai@^1.35.0",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+    "react": "https://esm.sh/react@19.0.0",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/"
   }
 }
 </script>
 <script>
-  tailwind.config = {
+  window.tailwind.config = {
     darkMode: 'class',
   }
 </script>
@@ -80,5 +82,7 @@
     <div id="root"></div>
     <div class="grid-line left-[5%] md:left-[10%]"></div>
     <div class="grid-line right-[5%] md:right-[10%]"></div>
+    <!-- Entry script must be defined to start the app -->
+    <script type="module" src="./index.tsx"></script>
 </body>
 </html>

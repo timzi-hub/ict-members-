@@ -1,8 +1,21 @@
 
 import { GoogleGenAI } from "@google/genai";
 
+const getApiKey = () => {
+  try {
+    return process.env.API_KEY || '';
+  } catch (e) {
+    return '';
+  }
+};
+
 export const generateArtPiece = async (prompt: string): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    console.warn("API Key not found. Image generation will fail.");
+  }
+  
+  const ai = new GoogleGenAI({ apiKey });
   
   try {
     const response = await ai.models.generateContent({
