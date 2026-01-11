@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 
 interface FAQProps {
-  onOpenModal: (type: 'login' | 'join') => void;
+  onBookCall: () => void;
 }
 
 const faqs = [
@@ -28,7 +28,7 @@ const faqs = [
   }
 ];
 
-const FAQ: React.FC<FAQProps> = ({ onOpenModal }) => {
+const FAQ: React.FC<FAQProps> = ({ onBookCall }) => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
@@ -41,14 +41,14 @@ const FAQ: React.FC<FAQProps> = ({ onOpenModal }) => {
           
           <div className="mt-12 bg-white dark:bg-[#141414] rounded-3xl border border-black dark:border-white p-8 shadow-sm transition-colors">
              <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-gray-100 dark:bg-white/10 rounded-full flex items-center justify-center text-2xl">📞</div>
+                <div className="w-16 h-16 bg-gray-100 dark:bg-white/10 rounded-full flex items-center justify-center text-2xl transition-colors">📞</div>
                 <div>
                    <h4 className="font-bold text-lg text-black dark:text-white transition-colors">Still have questions?</h4>
-                   <p className="text-black dark:text-white text-sm font-bold transition-colors">Book a quick 15-min discovery call.</p>
+                   <p className="text-black dark:text-white text-sm font-bold transition-colors opacity-60">Book a quick 15-min discovery call.</p>
                 </div>
              </div>
              <button 
-                onClick={() => onOpenModal('join')}
+                onClick={onBookCall}
                 className="w-full py-4 bg-black dark:bg-white text-white dark:text-black rounded-xl font-bold hover:opacity-90 transition-opacity"
              >
                Schedule a call
@@ -72,7 +72,7 @@ const FAQ: React.FC<FAQProps> = ({ onOpenModal }) => {
                 </span>
               </button>
               <div className={`overflow-hidden transition-all duration-300 ${openIndex === idx ? 'max-h-96 pb-6' : 'max-h-0'}`}>
-                <p className="text-black dark:text-white font-bold leading-relaxed text-lg transition-colors">
+                <p className="text-black dark:text-white font-bold leading-relaxed text-lg transition-colors opacity-70">
                   {faq.a}
                 </p>
               </div>

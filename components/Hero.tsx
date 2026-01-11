@@ -4,16 +4,25 @@ import React from 'react';
 interface HeroProps {
   onOpenModal: (type: 'login' | 'join') => void;
   onScrollTo: (id: string) => void;
+  onBookCall: () => void;
 }
 
-const Hero: React.FC<HeroProps> = ({ onOpenModal, onScrollTo }) => {
+const Hero: React.FC<HeroProps> = ({ onOpenModal, onScrollTo, onBookCall }) => {
   return (
     <section className="pt-40 pb-32 px-6 transition-colors">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
         <div className="lg:sticky lg:top-40">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-black dark:bg-white text-white dark:text-black text-[10px] font-black tracking-widest uppercase rounded-full mb-8 transition-colors">
-             <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-             Limited spots available
+          <div className="flex flex-wrap items-center gap-4 mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-black dark:bg-white text-white dark:text-black text-[10px] font-black tracking-widest uppercase rounded-full transition-colors">
+               <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+               Limited spots available
+            </div>
+            <button 
+              onClick={onBookCall}
+              className="text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white transition-colors"
+            >
+              Book an intro call →
+            </button>
           </div>
           <h1 className="text-6xl md:text-8xl font-bold leading-[0.95] mb-10 tracking-tighter text-black dark:text-white transition-colors">
             Digital art <br />
@@ -40,7 +49,6 @@ const Hero: React.FC<HeroProps> = ({ onOpenModal, onScrollTo }) => {
         </div>
 
         <div className="relative pt-10 lg:pt-0">
-          {/* Card Mockup Container */}
           <div className="relative z-10 p-8 bg-white dark:bg-[#141414] border border-gray-100 dark:border-white/10 rounded-[40px] shadow-2xl overflow-hidden group transition-colors">
             <div className="absolute top-0 right-0 w-32 h-32 bg-pink-100 dark:bg-pink-900/20 rounded-bl-full opacity-50 group-hover:scale-110 transition-transform"></div>
             
@@ -75,15 +83,13 @@ const Hero: React.FC<HeroProps> = ({ onOpenModal, onScrollTo }) => {
               onClick={() => onOpenModal('join')}
               className="w-full mt-8 py-5 bg-black dark:bg-white text-white dark:text-black rounded-2xl font-bold text-lg hover:opacity-90 transition-opacity"
             >
-               Join ArtJoy
+               Join ArtJoy Club
             </button>
           </div>
 
-          {/* Decorative background element */}
           <div className="absolute -top-10 -right-10 w-64 h-64 bg-yellow-400 rounded-full blur-[100px] opacity-20 -z-0"></div>
           <div className="absolute -bottom-20 -left-10 w-80 h-80 bg-purple-500 rounded-full blur-[120px] opacity-20 -z-0"></div>
           
-          {/* Floating badge */}
           <div className="absolute -bottom-8 -right-8 z-20 bg-white dark:bg-[#1a1a1a] p-6 rounded-3xl shadow-2xl border border-gray-50 dark:border-white/10 max-w-[240px] transition-colors">
              <div className="flex items-center gap-4 mb-3">
                 <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-2xl flex items-center justify-center text-2xl transition-colors">✓</div>

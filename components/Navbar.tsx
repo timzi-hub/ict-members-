@@ -8,11 +8,12 @@ interface NavbarProps {
   onOpenModal: (type: 'login' | 'join') => void;
   onNavigate: (view: 'home' | 'learn' | 'profile') => void;
   onScrollTo: (id: string) => void;
+  onBookCall: () => void;
   currentView: 'home' | 'learn' | 'profile';
   user: User | null;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ isDark, onToggleTheme, onOpenModal, onNavigate, onScrollTo, currentView, user }) => {
+const Navbar: React.FC<NavbarProps> = ({ isDark, onToggleTheme, onOpenModal, onNavigate, onScrollTo, onBookCall, currentView, user }) => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-gray-100 dark:border-white/10 transition-colors">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -23,7 +24,7 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, onToggleTheme, onOpenModal, onN
           <span className="text-xl font-bold tracking-tight text-black dark:text-white transition-colors">ArtJoy</span>
         </div>
         
-        <div className="hidden md:flex items-center gap-8 text-sm font-black text-black dark:text-white transition-colors">
+        <div className="hidden lg:flex items-center gap-8 text-sm font-black text-black dark:text-white transition-colors">
           <button 
             onClick={() => onNavigate('home')} 
             className={`hover:opacity-60 transition-opacity uppercase tracking-widest ${currentView === 'home' ? 'underline decoration-2 underline-offset-8' : ''}`}
@@ -51,6 +52,12 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, onToggleTheme, onOpenModal, onN
         </div>
 
         <div className="flex items-center gap-4">
+          <button 
+            onClick={onBookCall}
+            className="hidden sm:flex items-center gap-2 px-4 py-2 border border-black/20 dark:border-white/20 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-all text-xs font-black uppercase tracking-widest text-black dark:text-white"
+          >
+            Book a call
+          </button>
           <button 
             onClick={onToggleTheme}
             className="p-2.5 rounded-lg border border-black dark:border-white text-black dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-all flex items-center justify-center w-10 h-10"

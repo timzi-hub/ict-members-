@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { generateArtPiece } from '../services/geminiService';
 import { ArtPiece, User } from '../types';
 
@@ -21,12 +21,25 @@ const Gallery: React.FC<GalleryProps> = ({ onFavorite, onGenerate, user }) => {
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [reportedIds, setReportedIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    let timer: number;
+    if (showSuccess) {
+      timer = window.setTimeout(() => {
+        setShowSuccess(false);
+      }, 4000);
+    }
+    return () => clearTimeout(timer);
+  }, [showSuccess]);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
     
     setIsGenerating(true);
     setError(null);
+    setShowSuccess(false);
     try {
       const imageUrl = await generateArtPiece(prompt);
       const newArt: ArtPiece = {
@@ -40,6 +53,7 @@ const Gallery: React.FC<GalleryProps> = ({ onFavorite, onGenerate, user }) => {
       setArtworks([newArt, ...artworks]);
       onGenerate(newArt);
       setPrompt('');
+      setShowSuccess(true);
     } catch (err) {
       setError("Failed to generate art. Check your API key or try a different prompt.");
     } finally {
@@ -47,8 +61,20 @@ const Gallery: React.FC<GalleryProps> = ({ onFavorite, onGenerate, user }) => {
     }
   };
 
+  const handleReport = (id: string) => {
+    setReportedIds(prev => new Set(prev).add(id));
+    // In a real app, this would send a signal to the backend
+    setTimeout(() => {
+      setReportedIds(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }, 3000);
+  };
+
   return (
-    <section id="gallery" className="py-32 px-6 transition-colors">
+    <section id="gallery" className="py-32 px-6 transition-colors relative">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
           <div>
@@ -58,7 +84,7 @@ const Gallery: React.FC<GalleryProps> = ({ onFavorite, onGenerate, user }) => {
             </h2>
           </div>
           
-          <div className="flex-1 max-w-lg">
+          <div className="flex-1 max-w-lg relative">
             <p className="text-sm text-black dark:text-white mb-4 font-black uppercase tracking-tight italic transition-colors">Generate your own masterpiece (AI Powered)</p>
             <div className="relative group">
               <input 
@@ -77,29 +103,62 @@ const Gallery: React.FC<GalleryProps> = ({ onFavorite, onGenerate, user }) => {
                 {isGenerating ? '...' : 'Create'}
               </button>
             </div>
-            {error && <p className="text-red-600 dark:text-red-400 text-xs mt-2 font-black">{error}</p>}
+            {error && <p className="text-red-600 dark:text-red-400 text-xs mt-2 font-black animate-in fade-in slide-in-from-top-1">{error}</p>}
+            {showSuccess && (
+              <div className="absolute -bottom-12 left-0 right-0 flex justify-center md:justify-start pointer-events-none">
+                <p className="bg-green-500 text-white px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest shadow-lg animate-in fade-in slide-in-from-top-2 duration-300">
+                  ✨ Masterpiece ready!
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {artworks.map((art) => {
             const isFav = user?.favorites.some(f => f.id === art.id);
+            const isReported = reportedIds.has(art.id);
             return (
-              <div key={art.id} className="group cursor-pointer relative">
+              <div key={art.id} className="group cursor-pointer relative animate-in fade-in zoom-in duration-500">
                 <div className="aspect-square bg-gray-100 dark:bg-white/5 rounded-3xl overflow-hidden mb-4 shadow-sm border border-gray-100 dark:border-white/10 group-hover:shadow-xl transition-all duration-500 relative">
                   <img 
                     src={art.imageUrl} 
                     alt={art.title} 
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); onFavorite(art); }}
-                    className={`absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-md flex items-center justify-center shadow-lg transform transition-transform duration-300 hover:scale-110 active:scale-90 ${isFav ? 'text-red-500' : 'text-black/30 dark:text-white/30'}`}
-                  >
-                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                    </svg>
-                  </button>
+                  
+                  {/* Action Buttons Overlay */}
+                  <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); onFavorite(art); }}
+                      title="Favorite"
+                      className={`w-10 h-10 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-md flex items-center justify-center shadow-lg transform transition-transform duration-300 hover:scale-110 active:scale-90 ${isFav ? 'text-red-500' : 'text-black/30 dark:text-white/30'}`}
+                    >
+                      <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                      </svg>
+                    </button>
+                    
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); handleReport(art.id); }}
+                      title="Report Content"
+                      disabled={isReported}
+                      className={`w-10 h-10 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-md flex items-center justify-center shadow-lg transform transition-transform duration-300 hover:scale-110 active:scale-90 ${isReported ? 'text-orange-500' : 'text-black/30 dark:text-white/30'}`}
+                    >
+                      <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6z" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  {/* Reported Confirmation Overlay */}
+                  {isReported && (
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-6 text-center animate-in fade-in duration-300">
+                      <p className="text-white text-xs font-black uppercase tracking-widest leading-relaxed">
+                        Flagged for review.<br/>Thank you for helping us curate.
+                      </p>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <h4 className="font-bold text-lg mb-1 text-black dark:text-white transition-colors">{art.title}</h4>

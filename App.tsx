@@ -27,6 +27,7 @@ const App: React.FC = () => {
     if (isDark) {
       document.documentElement.classList.add('dark');
     } else {
+      document.documentElement.classList.remove('class'); // Tailwind dark mode toggle
       document.documentElement.classList.remove('dark');
     }
   }, [isDark]);
@@ -77,6 +78,21 @@ const App: React.FC = () => {
     }
   };
 
+  const openBooking = () => {
+    // @ts-ignore - Cal is added via script tag
+    if (window.Cal) {
+      // @ts-ignore
+      window.Cal.ns["15min"]("ui", {
+        theme: isDark ? "dark" : "light",
+        styles: { branding: { brandColor: isDark ? "#ffffff" : "#000000" } }
+      });
+      // @ts-ignore
+      window.Cal.ns["15min"]("open", { calLink: "artjoy/15min" });
+    } else {
+      alert("Opening our booking studio...");
+    }
+  };
+
   const toggleFavorite = useCallback((piece: ArtPiece) => {
     if (!user) {
       setModalType('login');
@@ -100,13 +116,14 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen selection:bg-black selection:text-white transition-colors duration-300 dark:bg-[#0a0a0a]">
+    <div className="min-h-screen selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black transition-colors duration-300 dark:bg-[#0a0a0a]">
       <Navbar 
         isDark={isDark} 
         onToggleTheme={toggleTheme} 
         onOpenModal={openModal} 
         onNavigate={navigateTo}
         onScrollTo={scrollToSection}
+        onBookCall={openBooking}
         currentView={currentView}
         user={user}
       />
@@ -114,7 +131,7 @@ const App: React.FC = () => {
       <main>
         {currentView === 'home' && (
           <>
-            <Hero onOpenModal={openModal} onScrollTo={scrollToSection} />
+            <Hero onOpenModal={openModal} onScrollTo={scrollToSection} onBookCall={openBooking} />
             <Marquee />
             <HowItWorks />
             <Gallery onFavorite={toggleFavorite} onGenerate={addGeneratedPiece} user={user} />
@@ -138,16 +155,16 @@ const App: React.FC = () => {
             </section>
             <Benefits />
             <Pricing onOpenModal={openModal} />
-            <FAQ onOpenModal={openModal} />
+            <FAQ onBookCall={openBooking} />
           </>
         )}
-        {currentView === 'learn' && <Learn />}
+        {currentView === 'learn' && <Learn onBookCall={openBooking} />}
         {currentView === 'profile' && user && (
           <Profile user={user} onLogout={handleLogout} onScrollTo={scrollToSection} />
         )}
       </main>
 
-      <Footer onOpenModal={openModal} />
+      <Footer onOpenModal={openModal} onBookCall={openBooking} />
       
       {/* Floating CTA Badge */}
       {!user && (
@@ -161,7 +178,7 @@ const App: React.FC = () => {
             </div>
             <div className="text-left">
                <div className="text-[10px] font-black uppercase text-black dark:text-white leading-none mb-1 tracking-wider">Start Today</div>
-               <div className="text-sm font-black leading-none text-black dark:text-white">Join ArtJoy</div>
+               <div className="text-sm font-black leading-none text-black dark:text-white">Join ArtJoy Club</div>
             </div>
           </button>
         </div>
