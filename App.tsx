@@ -12,6 +12,7 @@ import Footer from './components/Footer';
 import Modal from './components/Modal';
 import Learn from './components/Learn';
 import Profile from './components/Profile';
+import StudioAssistant from './components/StudioAssistant';
 import { User, ArtPiece, SubscriptionStatus } from './types';
 
 const App: React.FC = () => {
@@ -27,7 +28,7 @@ const App: React.FC = () => {
     if (isDark) {
       document.documentElement.classList.add('dark');
     } else {
-      document.documentElement.classList.remove('class'); // Tailwind dark mode toggle
+      document.documentElement.classList.remove('class');
       document.documentElement.classList.remove('dark');
     }
   }, [isDark]);
@@ -79,7 +80,7 @@ const App: React.FC = () => {
   };
 
   const openBooking = () => {
-    // @ts-ignore - Cal is added via script tag
+    // @ts-ignore
     if (window.Cal) {
       // @ts-ignore
       window.Cal.ns["15min"]("ui", {
@@ -165,6 +166,7 @@ const App: React.FC = () => {
       </main>
 
       <Footer onOpenModal={openModal} onBookCall={openBooking} />
+      <StudioAssistant />
       
       {/* Floating CTA Badge */}
       {!user && (
